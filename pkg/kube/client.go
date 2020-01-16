@@ -52,8 +52,9 @@ var ErrNoObjectsVisited = errors.New("no objects visited")
 
 // Client represents a client capable of communicating with the Kubernetes API.
 type Client struct {
-	Factory Factory
-	Log     func(string, ...interface{})
+	Factory   Factory
+	Log       func(string, ...interface{})
+	Namespace string
 }
 
 // New creates a new Client.
@@ -108,6 +109,9 @@ func (c *Client) Wait(resources ResourceList, timeout time.Duration) error {
 }
 
 func (c *Client) namespace() string {
+	if c.Namespace != "" {
+		return c.Namespace
+	}
 	if ns, _, err := c.Factory.ToRawKubeConfigLoader().Namespace(); err == nil {
 		return ns
 	}
